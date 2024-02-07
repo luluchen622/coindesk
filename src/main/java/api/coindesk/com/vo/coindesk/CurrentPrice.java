@@ -1,4 +1,4 @@
-package tw.com.coindesk.domain;
+package api.coindesk.com.vo.coindesk;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -6,6 +6,9 @@ import lombok.ToString;
 
 import java.util.Map;
 
+/**
+ * coindesk api 物件
+ */
 @Getter
 @Setter
 @ToString

@@ -8,7 +8,7 @@
 	</parent>
 
 	<artifactId>coindesk</artifactId>
-	<groupId>tw.com.coindesk</groupId>
+	<groupId>api.coindesk.com</groupId>
 	<name>coindesk</name>
 	<version>0.1.0</version>
 
