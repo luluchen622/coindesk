@@ -15,7 +15,7 @@ import java.util.List;
 public class CoinDeskTransfer {
 
     /** 更新時間 1990/01/01 00:00:00 */
-    private LocalDateTime updateTime;
+    private String updateTime;
     /** 幣別相關資訊 (幣別，幣別中文名稱，以及匯率) */
     private List<Currency> currencyList;
 
