@@ -1,5 +1,7 @@
 package api.coindesk.com.controller;
 
+import api.coindesk.com.service.CurrencyService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -11,8 +13,11 @@ import java.util.List;
  * 幣別資料表維護
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/currency")
 public class CurrencyController {
+
+    final CurrencyService service;
 
     /**
      * 取得全部幣別資料
@@ -20,7 +25,7 @@ public class CurrencyController {
      */
     @GetMapping("/all")
     ResponseEntity<List<Currency>> getAll() {
-        return null;
+        return service.getAll();
     }
 
     /**
@@ -30,7 +35,7 @@ public class CurrencyController {
      */
     @GetMapping("/{code}")
     ResponseEntity<Currency> getOne(@PathVariable("code") String code) {
-        return null;
+        return service.getOne(code);
     }
 
     /**
@@ -40,7 +45,7 @@ public class CurrencyController {
      */
     @PostMapping
     ResponseEntity<Boolean> create(@Validated @RequestBody Currency dto) {
-        return null;
+        return service.create(dto);
     }
 
     /**
@@ -51,7 +56,7 @@ public class CurrencyController {
      */
     @PutMapping("/{code}")
     ResponseEntity<Currency> replace(@PathVariable("code") String code, @Validated @RequestBody Currency dto) {
-        return null;
+        return service.replace(code, dto);
     }
 
     /**
@@ -60,8 +65,8 @@ public class CurrencyController {
      * @return
      */
     @DeleteMapping("/{code}")
-    ResponseEntity<Boolean> deleteCurrency(@PathVariable("code") Long code) {
-        return null;
+    ResponseEntity<Boolean> deleteCurrency(@PathVariable("code") String code) {
+        return service.deleteCurrency(code);
     }
 
 }

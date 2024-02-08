@@ -3,6 +3,7 @@ package api.coindesk.com.controller;
 import api.coindesk.com.vo.currency.Currency;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -10,6 +11,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Description;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import javax.transaction.Transactional;
+import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -23,12 +28,33 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Slf4j
+@Transactional
 class CurrencyControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     ObjectMapper mapper;
+
+    @BeforeEach
+    @Description("新增兩筆作為測試資料")
+    void initMockData() throws Exception {
+        Currency currency = Currency.builder()
+                .code("USD")
+                .currencyName("美元")
+                .build();
+
+        Currency currency2 = Currency.builder()
+                .code("EUR")
+                .currencyName("歐元")
+                .build();
+
+        mockMvc.perform(post("/v1/currency").content(mapper.writeValueAsString(currency)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/v1/currency").content(mapper.writeValueAsString(currency2)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 
     @Test
     @Description("測試呼叫新增幣別對應表資料API。")
@@ -40,19 +66,23 @@ class CurrencyControllerTest {
                 .build();
 
         String result = mockMvc.perform(post("/v1/currency").content(mapper.writeValueAsString(currency)).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andDo(print()).andReturn().getResponse().getContentAsString();
+                .andExpect(status().isOk()).andDo(print()).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
         // 新增成功回傳true
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(true);
+                .isEqualTo("true");
     }
 
 
     @Test
     @Description("測試呼叫查詢全部幣別對應表資料API")
     void getAll() throws Exception {
-        String result = mockMvc.perform(get("/v1/currency/all").contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andDo(print()).andReturn().getResponse().getContentAsString();
+        mockMvc.perform(get("/v1/currency/all").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andDo(print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[0].code").value("USD"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[0].currencyName").value("美元"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[1].code").value("EUR"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[1].currencyName").value("歐元"));
     }
 
     @Test
@@ -60,7 +90,7 @@ class CurrencyControllerTest {
     void getOne() throws Exception {
         String testCurrency = "USD";
         String result = mockMvc.perform(get("/v1/currency/{code}", testCurrency).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andDo(print()).andReturn().getResponse().getContentAsString();
+                .andExpect(status().isOk()).andDo(print()).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
         Currency currency = mapper.readValue(result, Currency.class);
         assertThat(currency)
                 .isNotNull()
@@ -79,7 +109,7 @@ class CurrencyControllerTest {
                 .build();
 
         String result = mockMvc.perform(put("/v1/currency/{code}", usd).content(mapper.writeValueAsString(replace)).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andDo(print()).andReturn().getResponse().getContentAsString();
+                .andExpect(status().isOk()).andDo(print()).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
         // 轉換object
         Currency currencyResult = mapper.readValue(result, Currency.class);
         assertThat(currencyResult)
@@ -92,10 +122,21 @@ class CurrencyControllerTest {
     @Description("測試呼叫刪除幣別對應表資料API。")
     void deleteCurrency() throws Exception {
         String result = mockMvc.perform(delete("/v1/currency/{code}", "USD").contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andDo(print()).andReturn().getResponse().getContentAsString();
+                .andExpect(status().isOk()).andDo(print()).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
         // 刪除成功回傳true
         assertThat(result)
                 .isNotNull()
-                .isEqualTo(true);
+                .isEqualTo("true");
+    }
+
+    @Test
+    @Description("反向-測試呼叫刪除幣別對應表資料API。")
+    void deleteCurrencyErr() throws Exception {
+        String result = mockMvc.perform(delete("/v1/currency/{code}", "AAA").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andDo(print()).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
+        // 刪除成功回傳true
+        assertThat(result)
+                .isNotNull()
+                .isEqualTo("false");
     }
 }
