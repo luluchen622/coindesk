@@ -1,5 +1,6 @@
 package api.coindesk.com.vo.currency;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import javax.persistence.Column;
  */
 @Getter
 @Setter
+@Builder
 public class Currency {
 
     /** 幣別 */

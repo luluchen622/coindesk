@@ -60,7 +60,7 @@ public class CurrencyController {
      * @return
      */
     @DeleteMapping("/{code}")
-    ResponseEntity<Boolean> delete(@PathVariable("code") Long code) {
+    ResponseEntity<Boolean> deleteCurrency(@PathVariable("code") Long code) {
         return null;
     }
 
