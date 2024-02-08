@@ -36,26 +36,6 @@ class CurrencyControllerTest {
     @Autowired
     ObjectMapper mapper;
 
-    @BeforeEach
-    @Description("新增兩筆作為測試資料")
-    void initMockData() throws Exception {
-        Currency currency = Currency.builder()
-                .code("USD")
-                .currencyName("美元")
-                .build();
-
-        Currency currency2 = Currency.builder()
-                .code("EUR")
-                .currencyName("歐元")
-                .build();
-
-        mockMvc.perform(post("/v1/currency").content(mapper.writeValueAsString(currency)).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(post("/v1/currency").content(mapper.writeValueAsString(currency2)).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
-
     @Test
     @Description("測試呼叫新增幣別對應表資料API。")
     void create() throws Exception {
@@ -81,13 +61,15 @@ class CurrencyControllerTest {
                 .andExpect(status().isOk()).andDo(print())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.[0].code").value("USD"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.[0].currencyName").value("美元"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.[1].code").value("EUR"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.[1].currencyName").value("歐元"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[1].code").value("GBP"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[1].currencyName").value("英鎊"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[2].code").value("EUR"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.[2].currencyName").value("歐元"));
     }
 
     @Test
     @Description("測試呼叫查詢幣別對應表資料API，並顯示其內容。")
-    void getOne() throws Exception {
+    void getCurrencyByCode() throws Exception {
         String testCurrency = "USD";
         String result = mockMvc.perform(get("/v1/currency/{code}", testCurrency).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andDo(print()).andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
