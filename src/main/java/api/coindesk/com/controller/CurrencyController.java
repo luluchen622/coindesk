@@ -1,6 +1,7 @@
 package api.coindesk.com.controller;
 
 import api.coindesk.com.service.CurrencyService;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -34,8 +35,8 @@ public class CurrencyController {
      * @return
      */
     @GetMapping("/{code}")
-    ResponseEntity<Currency> getOne(@PathVariable("code") String code) {
-        return service.getOne(code);
+    ResponseEntity<Currency> getCurrencyByCode(@NonNull @PathVariable("code") String code) {
+        return service.getCurrencyByCode(code);
     }
 
     /**
@@ -55,7 +56,7 @@ public class CurrencyController {
      * @return
      */
     @PutMapping("/{code}")
-    ResponseEntity<Currency> replace(@PathVariable("code") String code, @Validated @RequestBody Currency dto) {
+    ResponseEntity<Currency> replace(@NonNull @PathVariable("code") String code, @Validated @RequestBody Currency dto) {
         return service.replace(code, dto);
     }
 
@@ -65,7 +66,7 @@ public class CurrencyController {
      * @return
      */
     @DeleteMapping("/{code}")
-    ResponseEntity<Boolean> deleteCurrency(@PathVariable("code") String code) {
+    ResponseEntity<Boolean> deleteCurrency(@NonNull @PathVariable("code") String code) {
         return service.deleteCurrency(code);
     }
 

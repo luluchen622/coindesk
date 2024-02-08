@@ -29,7 +29,7 @@ public class CurrencyService {
         return new ResponseEntity<>(mapper.entityToCurrencyList(repository.findAll()), HttpStatus.OK);
     }
 
-    public ResponseEntity<Currency> getOne(String code) {
+    public ResponseEntity<Currency> getCurrencyByCode(String code) {
         CurrencyEntity currency = Optional.ofNullable(repository.findByCode(code)).orElseThrow(() -> new NullPointerException("Currency Code NotFound = " + code));
         return new ResponseEntity<>(mapper.entityToCurrency(currency), HttpStatus.OK);
     }
